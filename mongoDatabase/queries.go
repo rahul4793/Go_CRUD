@@ -10,19 +10,17 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const defaultTimeout = 5 * time.Second
-
-func withTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
-	return context.WithTimeout(ctx, defaultTimeout)
+type Queryis struct {
 }
 
-func InsertUser(ctx context.Context, col *mongo.Collection, req request.CreateUserRequest) (*models.User, error) {
-	ctx, cancel := withTimeout(ctx)
+func (Queryis *Queryis) InsertUser(req request.CreateUserRequest) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	col := models.GetUserCollection()
 
 	if count, err := col.CountDocuments(ctx, bson.M{"email": req.Email, "isDeleted": false}); err != nil {
 		return nil, err
@@ -45,12 +43,13 @@ func InsertUser(ctx context.Context, col *mongo.Collection, req request.CreateUs
 	return user, nil
 }
 
-func GetAllUsers(ctx context.Context, col *mongo.Collection, page, limit int64) ([]models.User, error) {
-	ctx, cancel := withTimeout(ctx)
+func (Queryis *Queryis) GetAllUsers(page, limit int64) ([]models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	skip := (page - 1) * limit
 	opts := options.Find().SetSkip(skip).SetLimit(limit)
+	col := models.GetUserCollection()
 
 	cursor, err := col.Find(ctx, bson.M{"isDeleted": false}, opts)
 	if err != nil {
@@ -69,8 +68,8 @@ func GetAllUsers(ctx context.Context, col *mongo.Collection, page, limit int64) 
 	return users, nil
 }
 
-func GetUserByID(ctx context.Context, col *mongo.Collection, id string) (*models.User, error) {
-	ctx, cancel := withTimeout(ctx)
+func (Queryis *Queryis) GetUserByID(id string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -79,29 +78,33 @@ func GetUserByID(ctx context.Context, col *mongo.Collection, id string) (*models
 	}
 
 	var user models.User
+	col := models.GetUserCollection()
+
 	if err := col.FindOne(ctx, bson.M{"_id": objID, "isDeleted": false}).Decode(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func UpdateUser(ctx context.Context, col *mongo.Collection, id string, req request.UpdateUserRequest) error {
-	ctx, cancel := withTimeout(ctx)
+func UpdateUser(id string, req request.UpdateUserRequest) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
+	col := models.GetUserCollection()
 
 	update := bson.M{"$set": bson.M{"name": req.Name, "email": req.Email, "age": req.Age}}
 	_, err = col.UpdateOne(ctx, bson.M{"_id": objID, "isDeleted": false}, update)
 	return err
 }
 
-func SoftDeleteUser(ctx context.Context, col *mongo.Collection, id string) error {
-	ctx, cancel := withTimeout(ctx)
+func SoftDeleteUser(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	col := models.GetUserCollection()
 
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

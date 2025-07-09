@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 
 	"crud-app/models"
 	"crud-app/mongoDatabase"
@@ -11,7 +10,8 @@ import (
 )
 
 type UserManager struct {
-	collection *mongo.Collection
+	collection   *mongo.Collection
+	mongodbQuery *mongoDatabase.Queryis
 }
 
 func NewUserManager(col *mongo.Collection) *UserManager {
@@ -20,22 +20,22 @@ func NewUserManager(col *mongo.Collection) *UserManager {
 
 // usermgr :=new(UserManager)  add this
 
-func (m *UserManager) CreateUser(ctx context.Context, req request.CreateUserRequest) (*models.User, error) {
-	return mongoDatabase.InsertUser(ctx, m.collection, req)
+func (m *UserManager) CreateUser(req request.CreateUserRequest) (*models.User, error) {
+	return m.mongodbQuery.InsertUser(req)
 }
 
-func (m *UserManager) GetAllUsers(ctx context.Context, page, limit int64) ([]models.User, error) {
-	return mongoDatabase.GetAllUsers(ctx, m.collection, page, limit)
+func (m *UserManager) GetAllUsers(page, limit int64) ([]models.User, error) {
+	return m.mongodbQuery.GetAllUsers(page, limit)
 }
 
-func (m *UserManager) GetUserByID(ctx context.Context, id string) (*models.User, error) {
-	return mongoDatabase.GetUserByID(ctx, m.collection, id)
+func (m *UserManager) GetUserByID(id string) (*models.User, error) {
+	return m.mongodbQuery.GetUserByID(id)
 }
 
-func (m *UserManager) UpdateUser(ctx context.Context, id string, req request.UpdateUserRequest) error {
-	return mongoDatabase.UpdateUser(ctx, m.collection, id, req)
+func (m *UserManager) UpdateUser(id string, req request.UpdateUserRequest) error {
+	return mongoDatabase.UpdateUser(id, req)
 }
 
-func (m *UserManager) DeleteUser(ctx context.Context, id string) error {
-	return mongoDatabase.SoftDeleteUser(ctx, m.collection, id)
+func (m *UserManager) DeleteUser(id string) error {
+	return mongoDatabase.SoftDeleteUser(id)
 }

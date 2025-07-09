@@ -33,7 +33,7 @@ func (c *UserController) CreateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response.UserResponse{Message: err.Error()})
 	}
 
-	user, err := c.manager.CreateUser(ctx.Request().Context(), req)
+	user, err := c.manager.CreateUser(req)
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, response.UserResponse{Message: err.Error()})
@@ -50,7 +50,7 @@ func (c *UserController) GetAllUsers(ctx echo.Context) error {
 		req.Limit = 10
 	}
 
-	users, err := c.manager.GetAllUsers(ctx.Request().Context(), req.Page, req.Limit)
+	users, err := c.manager.GetAllUsers(req.Page, req.Limit)
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, response.UserResponse{Message: err.Error()})
@@ -68,7 +68,7 @@ func (c *UserController) GetAllUsers(ctx echo.Context) error {
 
 func (c *UserController) GetUserByID(ctx echo.Context) error {
 	id := ctx.Param("id")
-	user, err := c.manager.GetUserByID(ctx.Request().Context(), id)
+	user, err := c.manager.GetUserByID(id)
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, response.UserResponse{Message: err.Error()})
 	}
@@ -88,12 +88,12 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response.UserResponse{Message: "Bad request"})
 	}
 
-	_, err := c.manager.GetUserByID(ctx.Request().Context(), id)
+	_, err := c.manager.GetUserByID(id)
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, response.UserResponse{Message: "User not found or is deleted"})
 	}
 
-	if err := c.manager.UpdateUser(ctx.Request().Context(), id, req); err != nil {
+	if err := c.manager.UpdateUser(id, req); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, response.UserResponse{Message: err.Error()})
 	}
 
@@ -103,12 +103,12 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 func (c *UserController) DeleteUser(ctx echo.Context) error {
 	id := ctx.Param("id")
 
-	_, err := c.manager.GetUserByID(ctx.Request().Context(), id)
+	_, err := c.manager.GetUserByID(id)
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, response.UserResponse{Message: "User already deleted"})
 	}
 
-	if err := c.manager.DeleteUser(ctx.Request().Context(), id); err != nil {
+	if err := c.manager.DeleteUser(id); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, response.UserResponse{Message: err.Error()})
 	}
 

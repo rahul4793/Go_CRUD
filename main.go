@@ -20,11 +20,22 @@ var userController *controller.UserController
 
 // var validate *validator.Validate
 
+// func init() {
+// 	config.Load()
+// 	logger.InitLogger()
+// 	client := database.Connect()
+// 	userCollection := mongoDatabase.InitUserCollection(client)
+
+//		userManager := manager.NewUserManager(userCollection)
+//		validate := validator.New()
+//		userController = controller.NewUserController(userManager, validate)
+//	}
 func init() {
 	config.Load()
 	logger.InitLogger()
-	client := database.Connect()
-	userCollection := mongoDatabase.InitUserCollection(client)
+	database.Connect()
+
+	userCollection := mongoDatabase.InitUserCollection(database.MongoClient)
 
 	userManager := manager.NewUserManager(userCollection)
 	validate := validator.New()
