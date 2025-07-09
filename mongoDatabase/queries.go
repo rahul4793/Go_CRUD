@@ -69,27 +69,6 @@ func GetAllUsers(ctx context.Context, col *mongo.Collection, page, limit int64) 
 	return users, nil
 }
 
-// func GetAllUsers(col *mongo.Collection, page, limit int64) ([]models.User, error) {
-// 	skip := (page - 1) * limit
-// 	opts := options.Find().SetSkip(skip).SetLimit(limit)
-
-// 	cursor, err := col.Find(nil, bson.M{"isDeleted": false}, opts)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer cursor.Close(nil)
-
-// 	var users []models.User
-// 	for cursor.Next(nil) {
-// 		var u models.User
-// 		if err := cursor.Decode(&u); err != nil {
-// 			return nil, err
-// 		}
-// 		users = append(users, u)
-// 	}
-// 	return users, nil
-// }
-
 func GetUserByID(ctx context.Context, col *mongo.Collection, id string) (*models.User, error) {
 	ctx, cancel := withTimeout(ctx)
 	defer cancel()

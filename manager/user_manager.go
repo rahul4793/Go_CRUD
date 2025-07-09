@@ -24,12 +24,8 @@ func (m *UserManager) CreateUser(ctx context.Context, req request.CreateUserRequ
 	return mongoDatabase.InsertUser(ctx, m.collection, req)
 }
 
-// func (m *UserManager) GetAllUsers(ctx context.Context, page, limit int64) ([]models.User, error) {
-// 	return mongoDatabase.GetAllUsers(ctx, m.collection, page, limit)
-// }
-
-func (m *UserManager) GetAllUsers(page, limit int64) ([]models.User, error) {
-	return mongoDatabase.GetAllUsers(m.collection, page, limit)
+func (m *UserManager) GetAllUsers(ctx context.Context, page, limit int64) ([]models.User, error) {
+	return mongoDatabase.GetAllUsers(ctx, m.collection, page, limit)
 }
 
 func (m *UserManager) GetUserByID(ctx context.Context, id string) (*models.User, error) {

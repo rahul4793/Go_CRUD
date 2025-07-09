@@ -50,8 +50,7 @@ func (c *UserController) GetAllUsers(ctx echo.Context) error {
 		req.Limit = 10
 	}
 
-	// users, err := c.manager.GetAllUsers(ctx.Request().Context(), req.Page, req.Limit)
-	users, err := c.manager.GetAllUsers(req.Page, req.Limit)
+	users, err := c.manager.GetAllUsers(ctx.Request().Context(), req.Page, req.Limit)
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, response.UserResponse{Message: err.Error()})
