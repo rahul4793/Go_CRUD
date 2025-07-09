@@ -13,14 +13,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Queryis struct {
+type User struct {
+	mongo *models.User
 }
 
-func (Queryis *Queryis) InsertUser(req request.CreateUserRequest) (*models.User, error) {
+// update and create in one
+// upsert
+func (user *User) InsertUser(req request.CreateUserRequest) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	col := models.GetUserCollection()
+	col := user.mongo.GetUserCollection()
 
 	if count, err := col.CountDocuments(ctx, bson.M{"email": req.Email, "isDeleted": false}); err != nil {
 		return nil, err
@@ -28,7 +31,7 @@ func (Queryis *Queryis) InsertUser(req request.CreateUserRequest) (*models.User,
 		return nil, errors.New("email already exists")
 	}
 
-	user := &models.User{
+	userModel := &models.User{
 		Name:      req.Name,
 		Email:     req.Email,
 		Age:       req.Age,
@@ -43,7 +46,10 @@ func (Queryis *Queryis) InsertUser(req request.CreateUserRequest) (*models.User,
 	return user, nil
 }
 
-func (Queryis *Queryis) GetAllUsers(page, limit int64) ([]models.User, error) {
+// aggreagation
+// facet
+// total in pagniantion
+func (Queryis *User) GetAllUsers(page, limit int64) ([]models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -68,7 +74,7 @@ func (Queryis *Queryis) GetAllUsers(page, limit int64) ([]models.User, error) {
 	return users, nil
 }
 
-func (Queryis *Queryis) GetUserByID(id string) (*models.User, error) {
+func (Queryis *User) GetUserByID(id string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

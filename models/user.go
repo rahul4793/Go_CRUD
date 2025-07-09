@@ -33,7 +33,7 @@ type User struct {
 	IsDeleted bool               `bson:"isDeleted" json:"isDeleted"`
 }
 
-func GetUserCollection() *mongo.Collection {
+func (user *User) GetUserCollection() *mongo.Collection {
 	if database.MongoDatabase == nil {
 		panic("MongoDatabase not initialized. Call database.Connect() first.")
 	}

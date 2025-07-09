@@ -1,7 +1,6 @@
 package manager
 
 import (
-
 	"crud-app/models"
 	"crud-app/mongoDatabase"
 	"crud-app/request"
@@ -11,7 +10,7 @@ import (
 
 type UserManager struct {
 	collection   *mongo.Collection
-	mongodbQuery *mongoDatabase.Queryis
+	mongodbQuery *mongoDatabase.User
 }
 
 func NewUserManager(col *mongo.Collection) *UserManager {
